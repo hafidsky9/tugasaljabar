@@ -189,7 +189,7 @@ elif menu == "Kompresi Gambar PCA":
         with open(path, "wb") as f:
             f.write(uploaded.getbuffer())
 
-        if st.button("🗜️ Kompres Gambar"):
+        if st.button("Kompres Gambar"):
 
             original, compressed, ratio, original_size, compressed_size = compress_image(
                 path,
