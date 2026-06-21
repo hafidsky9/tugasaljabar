@@ -220,7 +220,6 @@ elif menu == "Kompresi Gambar PCA":
 
                 st.info(
                     f"Ukuran : {compressed_size:.2f} \n\n"
-                    f"Resolusi : {compressed.shape[1]} x {compressed.shape[0]}"
                 )
 
             st.divider()
