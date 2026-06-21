@@ -207,7 +207,7 @@ elif menu == "Kompresi Gambar PCA":
                 )
 
                 st.info(
-                    f"Ukuran : {original_size:.2f} \n\n"
+                    f"Ukuran : {original_size:.2f}kb\n\n"
                 )
 
             with col2:
@@ -218,7 +218,7 @@ elif menu == "Kompresi Gambar PCA":
                 )
 
                 st.info(
-                    f"Ukuran : {compressed_size:.2f} \n\n"
+                    f"Ukuran : {compressed_size:.2f}kb\n\n"
                 )
 
             st.divider()
