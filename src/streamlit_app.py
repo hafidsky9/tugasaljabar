@@ -153,18 +153,18 @@ if menu == "Deteksi Kemiripan Wajah":
 
 elif menu == "Kompresi Gambar PCA":
 
-        st.markdown(
-    '<div class="title">Kompresi Gambar PCA</div>',
+    st.markdown(
+     '<div class="title">Kompresi Gambar PCA</div>',
     unsafe_allow_html=True
-        )   
+)   
 
-uploaded = st.file_uploader(
+    uploaded = st.file_uploader(
     "Upload Gambar",
     type=["jpg", "jpeg", "png"],
     key="compress"
 )
 
-mode = st.radio(
+    mode = st.radio(
     "Mode Kompresi",
     [
         "RGB (Berwarna)",
@@ -172,7 +172,7 @@ mode = st.radio(
     ]
 )
 
-komponen = st.slider(
+    komponen = st.slider(
     "Jumlah Komponen PCA",
     min_value=10,
     max_value=200,
