@@ -153,44 +153,48 @@ if menu == "Deteksi Kemiripan Wajah":
 
 elif menu == "Kompresi Gambar PCA":
 
-    st.markdown(
-        '<div class="title">Kompresi Gambar PCA</div>',
-        unsafe_allow_html=True
+        st.markdown(
+    '<div class="title">Kompresi Gambar PCA</div>',
+    unsafe_allow_html=True
+        )   
+
+uploaded = st.file_uploader(
+    "Upload Gambar",
+    type=["jpg", "jpeg", "png"],
+    key="compress"
+)
+
+mode = st.radio(
+    "Mode Kompresi",
+    [
+        "RGB (Berwarna)",
+        "Grayscale"
+    ]
+)
+
+komponen = st.slider(
+    "Jumlah Komponen PCA",
+    min_value=10,
+    max_value=200,
+    value=50
+)
+
+if uploaded:
+
+    path = os.path.join(
+        "uploads",
+        uploaded.name
     )
 
-    st.markdown(
-        '<div class="subtitle">Reduksi Dimensi Gambar Menggunakan Principal Component Analysis</div>',
-        unsafe_allow_html=True
-    )
+    with open(path, "wb") as f:
+        f.write(uploaded.getbuffer())
 
-    uploaded = st.file_uploader(
-        "Upload Gambar",
-        type=["jpg", "jpeg", "png"],
-        key="compress"
-    )
+    if st.button("🗜️ Kompres Gambar"):
 
-    komponen = st.slider(
-        "Jumlah Komponen PCA",
-        min_value=10,
-        max_value=100,
-        value=50
-    )
-
-    if uploaded:
-
-        path = os.path.join(
-            "uploads",
-            uploaded.name
-        )
-
-        with open(path, "wb") as f:
-            f.write(
-                uploaded.getbuffer()
-            )
-
-        original, compressed, ratio = compress_image(
+        original, compressed, ratio, original_size, compressed_size = compress_image(
             path,
-            komponen
+            komponen,
+            mode
         )
 
         col1, col2 = st.columns(2)
@@ -202,6 +206,11 @@ elif menu == "Kompresi Gambar PCA":
                 use_container_width=True
             )
 
+            st.info(
+                f"Ukuran : {original_size:.2f} MB\n\n"
+                f"Resolusi : {original.shape[1]} x {original.shape[0]}"
+            )
+
         with col2:
             st.subheader("Hasil PCA")
             st.image(
@@ -209,7 +218,29 @@ elif menu == "Kompresi Gambar PCA":
                 use_container_width=True
             )
 
-        st.metric(
-            "Rasio Kompresi",
-            f"{ratio:.2f}%"
-        )
+            st.info(
+                f"Ukuran : {compressed_size:.2f} MB\n\n"
+                f"Resolusi : {compressed.shape[1]} x {compressed.shape[0]}"
+            )
+
+        st.divider()
+
+        colA, colB, colC = st.columns(3)
+
+        with colA:
+            st.metric(
+                "Ukuran Awal",
+                f"{original_size:.2f} MB"
+            )
+
+        with colB:
+            st.metric(
+                "Ukuran PCA",
+                f"{compressed_size:.2f} MB"
+            )
+
+        with colC:
+            st.metric(
+                "Rasio Kompresi",
+                f"{ratio:.2f}%"
+            )
