@@ -1,7 +1,7 @@
+import os
 import cv2
 import numpy as np
 from sklearn.decomposition import PCA
-
 
 def compress_image(image_path, n_components=50, mode="RGB (Berwarna)"):
 
@@ -12,13 +12,15 @@ def compress_image(image_path, n_components=50, mode="RGB (Berwarna)"):
 
         img = cv2.imread(image_path)
 
+        if img is None:
+            raise ValueError("Gagal membaca gambar")
+
         img = cv2.cvtColor(
             img,
             cv2.COLOR_BGR2RGB
         )
 
         channels = []
-
         total_compressed = 0
 
         for i in range(3):
@@ -64,8 +66,23 @@ def compress_image(image_path, n_components=50, mode="RGB (Berwarna)"):
             img.nbytes
         ) * 100
 
-        original_size = img.nbytes / 1024 / 1024
-        compressed_size = total_compressed / 1024 / 1024
+        original_size = os.path.getsize(
+            image_path
+        ) / 1024
+
+        temp_file = "compressed_temp.jpg"
+
+        cv2.imwrite(
+            temp_file,
+            cv2.cvtColor(
+                compressed_img,
+                cv2.COLOR_RGB2BGR
+            )
+        )
+
+        compressed_size = os.path.getsize(
+            temp_file
+        ) / 1024
 
         return (
             img,
@@ -84,6 +101,9 @@ def compress_image(image_path, n_components=50, mode="RGB (Berwarna)"):
             image_path,
             cv2.IMREAD_GRAYSCALE
         )
+
+        if img is None:
+            raise ValueError("Gagal membaca gambar")
 
         comp = min(
             n_components,
@@ -114,8 +134,20 @@ def compress_image(image_path, n_components=50, mode="RGB (Berwarna)"):
             img.nbytes
         ) * 100
 
-        original_size = img.nbytes / 1024 / 1024
-        compressed_size = transformed.nbytes / 1024 / 1024
+        original_size = os.path.getsize(
+            image_path
+        ) / 1024
+
+        temp_file = "compressed_temp.jpg"
+
+        cv2.imwrite(
+            temp_file,
+            reconstructed
+        )
+
+        compressed_size = os.path.getsize(
+            temp_file
+        ) / 1024
 
         return (
             img,
