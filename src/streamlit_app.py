@@ -175,7 +175,7 @@ elif menu == "Kompresi Gambar PCA":
     komponen = st.slider(
     "Jumlah Komponen PCA",
     min_value=10,
-    max_value=200,
+    max_value=100,
     value=50
 )
 
