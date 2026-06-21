@@ -151,10 +151,10 @@ if menu == "Deteksi Kemiripan Wajah":
 # MENU 2
 # ==========================
 
-elif menu == "Kompresi Gambar":
+elif menu == "Kompresi Gambar PCA":
 
     st.markdown(
-     '<div class="title">Kompresi Gambar</div>',
+     '<div class="title">Kompresi Gambar PCA</div>',
     unsafe_allow_html=True
 )   
 
