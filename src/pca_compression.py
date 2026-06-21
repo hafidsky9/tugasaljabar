@@ -2,37 +2,125 @@ import cv2
 import numpy as np
 from sklearn.decomposition import PCA
 
-def compress_image(image_path, n_components=50):
 
-    # Baca gambar grayscale
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+def compress_image(image_path, n_components=50, mode="RGB (Berwarna)"):
 
-    if img is None:
-        raise ValueError("Gambar tidak ditemukan")
+    # ==========================
+    # MODE RGB
+    # ==========================
+    if mode == "RGB (Berwarna)":
 
-    # PCA
-    pca = PCA(n_components=n_components)
+        img = cv2.imread(image_path)
 
-    transformed = pca.fit_transform(img)
+        img = cv2.cvtColor(
+            img,
+            cv2.COLOR_BGR2RGB
+        )
 
-    reconstructed = pca.inverse_transform(transformed)
+        channels = []
 
-    reconstructed = np.clip(
-        reconstructed,
-        0,
-        255
-    ).astype(np.uint8)
+        total_compressed = 0
 
-    # ukuran data
-    original_size = img.nbytes
-    compressed_size = transformed.nbytes
+        for i in range(3):
 
-    compression_ratio = (
-        compressed_size / original_size
-    ) * 100
+            channel = img[:, :, i]
 
-    return (
-        img,
-        reconstructed,
-        compression_ratio
-    )
+            comp = min(
+                n_components,
+                channel.shape[0],
+                channel.shape[1]
+            )
+
+            pca = PCA(
+                n_components=comp
+            )
+
+            transformed = pca.fit_transform(
+                channel
+            )
+
+            reconstructed = pca.inverse_transform(
+                transformed
+            )
+
+            reconstructed = np.clip(
+                reconstructed,
+                0,
+                255
+            ).astype(np.uint8)
+
+            channels.append(
+                reconstructed
+            )
+
+            total_compressed += transformed.nbytes
+
+        compressed_img = np.dstack(
+            channels
+        )
+
+        ratio = (
+            total_compressed /
+            img.nbytes
+        ) * 100
+
+        original_size = img.nbytes / 1024 / 1024
+        compressed_size = total_compressed / 1024 / 1024
+
+        return (
+            img,
+            compressed_img,
+            ratio,
+            original_size,
+            compressed_size
+        )
+
+    # ==========================
+    # MODE GRAYSCALE
+    # ==========================
+    else:
+
+        img = cv2.imread(
+            image_path,
+            cv2.IMREAD_GRAYSCALE
+        )
+
+        comp = min(
+            n_components,
+            img.shape[0],
+            img.shape[1]
+        )
+
+        pca = PCA(
+            n_components=comp
+        )
+
+        transformed = pca.fit_transform(
+            img
+        )
+
+        reconstructed = pca.inverse_transform(
+            transformed
+        )
+
+        reconstructed = np.clip(
+            reconstructed,
+            0,
+            255
+        ).astype(np.uint8)
+
+        ratio = (
+            transformed.nbytes /
+            img.nbytes
+        ) * 100
+
+        original_size = img.nbytes / 1024 / 1024
+        compressed_size = transformed.nbytes / 1024 / 1024
+
+        return (
+            img,
+            reconstructed,
+            ratio,
+            original_size,
+            compressed_size
+        )
