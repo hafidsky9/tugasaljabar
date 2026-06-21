@@ -1,11 +1,16 @@
 import streamlit as st
 import os
 from main import compare_faces
+from pca_compression import compress_image
 
 st.set_page_config(
-    page_title="Face Similarity Detection",
+    page_title="PCA Application",
     layout="wide"
 )
+
+# ==========================
+# CSS
+# ==========================
 
 st.markdown("""
 <style>
@@ -27,14 +32,6 @@ st.markdown("""
     margin-bottom:30px;
 }
 
-.upload-card{
-    border:2px dashed #2563eb;
-    border-radius:15px;
-    padding:20px;
-    text-align:center;
-    background:#f8fbff;
-}
-
 .stButton > button{
     width:100%;
     height:55px;
@@ -47,65 +44,172 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown(
-    '<div class="title">Face Similarity Detection</div>',
-    unsafe_allow_html=True
-)
+# ==========================
+# Sidebar
+# ==========================
 
-st.markdown(
-    '<div class="subtitle">Perbandingan Foto Masa Kecil dan Dewasa Menggunakan PCA</div>',
-    unsafe_allow_html=True
+menu = st.sidebar.radio(
+    "Pilih Fitur",
+    [
+        "Deteksi Kemiripan Wajah",
+        "Kompresi Gambar PCA"
+    ]
 )
 
 os.makedirs("uploads", exist_ok=True)
 
-col1, col2 = st.columns(2)
+# ==========================
+# MENU 1
+# ==========================
 
-with col1:
-    st.markdown("### Foto Masa Kecil")
-    foto1 = st.file_uploader(
-        "Upload Foto Masa Kecil",
-        type=["jpg", "jpeg", "png"],
-        key="foto1"
+if menu == "Deteksi Kemiripan Wajah":
+
+    st.markdown(
+        '<div class="title">Face Similarity Detection</div>',
+        unsafe_allow_html=True
     )
 
-with col2:
-    st.markdown("### Foto Masa Dewasa")
-    foto2 = st.file_uploader(
-        "Upload Foto Masa Dewasa",
-        type=["jpg", "jpeg", "png"],
-        key="foto2"
+    st.markdown(
+        '<div class="subtitle">Perbandingan Foto Masa Kecil dan Dewasa Menggunakan PCA</div>',
+        unsafe_allow_html=True
     )
 
-if foto1 and foto2:
+    col1, col2 = st.columns(2)
 
-    path1 = os.path.join("uploads", "foto_kecil.jpg")
-    path2 = os.path.join("uploads", "foto_dewasa.jpg")
+    with col1:
+        st.markdown("### Foto Masa Kecil")
 
-    with open(path1, "wb") as f:
-        f.write(foto1.getbuffer())
-
-    with open(path2, "wb") as f:
-        f.write(foto2.getbuffer())
-
-    st.image([path1, path2], width=250)
-
-    if st.button("Bandingkan Wajah"):
-
-        sim, result = compare_faces(path1, path2)
-
-        persen = sim * 100
-
-        st.subheader("Hasil Analisis")
-
-        st.metric(
-            "Tingkat Kemiripan",
-            f"{persen:.2f}%"
+        foto1 = st.file_uploader(
+            "Upload Foto Masa Kecil",
+            type=["jpg", "jpeg", "png"],
+            key="foto1"
         )
 
-        st.progress(min(int(persen), 100))
+    with col2:
+        st.markdown("### Foto Masa Dewasa")
 
-        if "Mirip" in result:
-            st.success(result)
-        else:
-            st.error(result)
+        foto2 = st.file_uploader(
+            "Upload Foto Masa Dewasa",
+            type=["jpg", "jpeg", "png"],
+            key="foto2"
+        )
+
+    if foto1 and foto2:
+
+        path1 = os.path.join(
+            "uploads",
+            "foto_kecil.jpg"
+        )
+
+        path2 = os.path.join(
+            "uploads",
+            "foto_dewasa.jpg"
+        )
+
+        with open(path1, "wb") as f:
+            f.write(foto1.getbuffer())
+
+        with open(path2, "wb") as f:
+            f.write(foto2.getbuffer())
+
+        st.image(
+            [path1, path2],
+            width=250
+        )
+
+        if st.button("Bandingkan Wajah"):
+
+            sim, result = compare_faces(
+                path1,
+                path2
+            )
+
+            persen = sim * 100
+
+            st.subheader(
+                "Hasil Analisis"
+            )
+
+            st.metric(
+                "Tingkat Kemiripan",
+                f"{persen:.2f}%"
+            )
+
+            st.progress(
+                min(
+                    int(persen),
+                    100
+                )
+            )
+
+            if "Mirip" in result:
+                st.success(result)
+            else:
+                st.error(result)
+
+# ==========================
+# MENU 2
+# ==========================
+
+elif menu == "Kompresi Gambar PCA":
+
+    st.markdown(
+        '<div class="title">Kompresi Gambar PCA</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="subtitle">Reduksi Dimensi Gambar Menggunakan Principal Component Analysis</div>',
+        unsafe_allow_html=True
+    )
+
+    uploaded = st.file_uploader(
+        "Upload Gambar",
+        type=["jpg", "jpeg", "png"],
+        key="compress"
+    )
+
+    komponen = st.slider(
+        "Jumlah Komponen PCA",
+        min_value=10,
+        max_value=100,
+        value=50
+    )
+
+    if uploaded:
+
+        path = os.path.join(
+            "uploads",
+            uploaded.name
+        )
+
+        with open(path, "wb") as f:
+            f.write(
+                uploaded.getbuffer()
+            )
+
+        original, compressed, ratio = compress_image(
+            path,
+            komponen
+        )
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Original")
+            st.image(
+                original,
+                use_container_width=True
+            )
+
+        with col2:
+            st.subheader("Hasil PCA")
+            st.image(
+                compressed,
+                use_container_width=True
+            )
+
+        st.metric(
+            "Rasio Kompresi",
+            f"{ratio:.2f}%"
+        )
