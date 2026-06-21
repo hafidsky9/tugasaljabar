@@ -208,7 +208,6 @@ elif menu == "Kompresi Gambar PCA":
 
                 st.info(
                     f"Ukuran : {original_size:.2f} \n\n"
-                    f"Resolusi : {original.shape[1]} x {original.shape[0]}"
                 )
 
             with col2:
