@@ -228,13 +228,13 @@ elif menu == "Kompresi Gambar PCA":
             with colA:
                 st.metric(
                     "Ukuran Awal",
-                    f"{original_size:.2f} "
+                    f"{original_size:.2f}kb "
                 )
 
             with colB:
                 st.metric(
                     "Ukuran PCA",
-                    f"{compressed_size:.2f} "
+                    f"{compressed_size:.2f}kb "
                 )
 
             with colC:
