@@ -207,7 +207,7 @@ elif menu == "Kompresi Gambar PCA":
                 )
 
                 st.info(
-                    f"Ukuran : {original_size:.2f} MB\n\n"
+                    f"Ukuran : {original_size:.2f} \n\n"
                     f"Resolusi : {original.shape[1]} x {original.shape[0]}"
                 )
 
@@ -219,7 +219,7 @@ elif menu == "Kompresi Gambar PCA":
                 )
 
                 st.info(
-                    f"Ukuran : {compressed_size:.2f} MB\n\n"
+                    f"Ukuran : {compressed_size:.2f} \n\n"
                     f"Resolusi : {compressed.shape[1]} x {compressed.shape[0]}"
                 )
 
