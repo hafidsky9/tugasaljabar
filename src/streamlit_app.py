@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from main import compare_faces
+from pca_compare import compare_faces
 from pca_compression import compress_image
 
 st.set_page_config(
