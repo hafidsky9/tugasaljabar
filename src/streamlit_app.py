@@ -179,68 +179,68 @@ elif menu == "Kompresi Gambar PCA":
     value=50
 )
 
-if uploaded:
+    if uploaded:
 
-    path = os.path.join(
-        "uploads",
-        uploaded.name
-    )
-
-    with open(path, "wb") as f:
-        f.write(uploaded.getbuffer())
-
-    if st.button("🗜️ Kompres Gambar"):
-
-        original, compressed, ratio, original_size, compressed_size = compress_image(
-            path,
-            komponen,
-            mode
+        path = os.path.join(
+            "uploads",
+            uploaded.name
         )
 
-        col1, col2 = st.columns(2)
+        with open(path, "wb") as f:
+            f.write(uploaded.getbuffer())
 
-        with col1:
-            st.subheader("Original")
-            st.image(
-                original,
-                use_container_width=True
+        if st.button("🗜️ Kompres Gambar"):
+
+            original, compressed, ratio, original_size, compressed_size = compress_image(
+                path,
+                komponen,
+                mode
             )
 
-            st.info(
-                f"Ukuran : {original_size:.2f} MB\n\n"
-                f"Resolusi : {original.shape[1]} x {original.shape[0]}"
-            )
+            col1, col2 = st.columns(2)
 
-        with col2:
-            st.subheader("Hasil PCA")
-            st.image(
-                compressed,
-                use_container_width=True
-            )
+            with col1:
+                st.subheader("Original")
+                st.image(
+                    original,
+                    use_container_width=True
+                )
 
-            st.info(
-                f"Ukuran : {compressed_size:.2f} MB\n\n"
-                f"Resolusi : {compressed.shape[1]} x {compressed.shape[0]}"
-            )
+                st.info(
+                    f"Ukuran : {original_size:.2f} MB\n\n"
+                    f"Resolusi : {original.shape[1]} x {original.shape[0]}"
+                )
 
-        st.divider()
+            with col2:
+                st.subheader("Hasil PCA")
+                st.image(
+                    compressed,
+                    use_container_width=True
+                )
 
-        colA, colB, colC = st.columns(3)
+                st.info(
+                    f"Ukuran : {compressed_size:.2f} MB\n\n"
+                    f"Resolusi : {compressed.shape[1]} x {compressed.shape[0]}"
+                )
 
-        with colA:
-            st.metric(
-                "Ukuran Awal",
-                f"{original_size:.2f} MB"
-            )
+            st.divider()
 
-        with colB:
-            st.metric(
-                "Ukuran PCA",
-                f"{compressed_size:.2f} MB"
-            )
+            colA, colB, colC = st.columns(3)
 
-        with colC:
-            st.metric(
-                "Rasio Kompresi",
-                f"{ratio:.2f}%"
-            )
+            with colA:
+                st.metric(
+                    "Ukuran Awal",
+                    f"{original_size:.2f} MB"
+                )
+
+            with colB:
+                st.metric(
+                    "Ukuran PCA",
+                    f"{compressed_size:.2f} MB"
+                )
+
+            with colC:
+                st.metric(
+                    "Rasio Kompresi",
+                    f"{ratio:.2f}%"
+                )
