@@ -1,6 +1,6 @@
 import joblib
 import numpy as np
-from dataset import preprocess_image
+from dataset_loader import preprocess_image
 
 pca = joblib.load("pca_model.pkl")
 
