@@ -19,26 +19,26 @@ st.markdown("""
     background-color: #f5f7fa;
 }
 
-.title{
-    text-align:center;
-    color:#1f2937;
-    font-size:40px;
-    font-weight:bold;
+.title {
+    text-align: center;
+    color: #1f2937;
+    font-size: 40px;
+    font-weight: bold;
 }
 
-.subtitle{
-    text-align:center;
-    color:#6b7280;
-    margin-bottom:30px;
+.subtitle {
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 30px;
 }
 
-.stButton > button{
-    width:100%;
-    height:55px;
-    font-size:18px;
-    border-radius:10px;
-    background:#2563eb;
-    color:white;
+.stButton > button {
+    width: 100%;
+    height: 55px;
+    font-size: 18px;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
 }
 
 </style>
@@ -59,7 +59,7 @@ menu = st.sidebar.radio(
 os.makedirs("uploads", exist_ok=True)
 
 # ==========================
-# MENU 1
+# MENU 1 - Deteksi Kemiripan Wajah
 # ==========================
 
 if menu == "Deteksi Kemiripan Wajah":
@@ -78,7 +78,6 @@ if menu == "Deteksi Kemiripan Wajah":
 
     with col1:
         st.markdown("### Foto Masa Kecil")
-
         foto1 = st.file_uploader(
             "Upload Foto Masa Kecil",
             type=["jpg", "jpeg", "png"],
@@ -87,7 +86,6 @@ if menu == "Deteksi Kemiripan Wajah":
 
     with col2:
         st.markdown("### Foto Masa Dewasa")
-
         foto2 = st.file_uploader(
             "Upload Foto Masa Dewasa",
             type=["jpg", "jpeg", "png"],
@@ -96,15 +94,8 @@ if menu == "Deteksi Kemiripan Wajah":
 
     if foto1 and foto2:
 
-        path1 = os.path.join(
-            "uploads",
-            "foto_kecil.jpg"
-        )
-
-        path2 = os.path.join(
-            "uploads",
-            "foto_dewasa.jpg"
-        )
+        path1 = os.path.join("uploads", "foto_kecil.jpg")
+        path2 = os.path.join("uploads", "foto_dewasa.jpg")
 
         with open(path1, "wb") as f:
             f.write(foto1.getbuffer())
@@ -112,133 +103,96 @@ if menu == "Deteksi Kemiripan Wajah":
         with open(path2, "wb") as f:
             f.write(foto2.getbuffer())
 
-        st.image(
-            [path1, path2],
-            width=250
-        )
+        st.image([path1, path2], width=250)
 
         if st.button("Bandingkan Wajah"):
+            try:
+                sim, result = compare_faces(path1, path2)
+                persen = sim * 100
 
-            sim, result = compare_faces(
-                path1,
-                path2
-            )
+                st.subheader("Hasil Analisis")
+                st.metric("Tingkat Kemiripan", f"{persen:.2f}%")
+                st.progress(min(int(persen), 100))
 
-            persen = sim * 100
+                if "Mirip" in result:
+                    st.success(result)
+                else:
+                    st.error(result)
 
-            st.subheader(
-                "Hasil Analisis"
-            )
-
-            st.metric(
-                "Tingkat Kemiripan",
-                f"{persen:.2f}%"
-            )
-
-            st.progress(
-                min(
-                    int(persen),
-                    100
-                )
-            )
-
-            if "Mirip" in result:
-                st.success(result)
-            else:
-                st.error(result)
+            except Exception as e:
+                st.error(f"Terjadi kesalahan saat membandingkan wajah: {e}")
 
 # ==========================
-# MENU 2
+# MENU 2 - Kompresi Gambar
 # ==========================
 
 elif menu == "Kompresi Gambar":
 
     st.markdown(
-     '<div class="title">Kompresi Gambar </div>',
-    unsafe_allow_html=True
-)   
+        '<div class="title">Kompresi Gambar</div>',
+        unsafe_allow_html=True
+    )
 
     uploaded = st.file_uploader(
-    "Upload Gambar",
-    type=["jpg", "jpeg", "png"],
-    key="compress"
-)
+        "Upload Gambar",
+        type=["jpg", "jpeg", "png"],
+        key="compress"
+    )
 
     mode = st.radio(
-    "Mode Kompresi",
-    [
-        "RGB (Berwarna)",
-        "Grayscale"
-    ]
-)
+        "Mode Kompresi",
+        [
+            "RGB (Berwarna)",
+            "Grayscale"
+        ]
+    )
 
     komponen = st.slider(
-    "Jumlah Komponen PCA",
-    min_value=0,
-    max_value=200,
-    value=50
-)
+        "Jumlah Komponen PCA",
+        min_value=1,
+        max_value=200,
+        value=50
+    )
 
     if uploaded:
 
-        path = os.path.join(
-            "uploads",
-            uploaded.name
-        )
+        path = os.path.join("uploads", uploaded.name)
 
         with open(path, "wb") as f:
             f.write(uploaded.getbuffer())
 
         if st.button("Kompres Gambar"):
-
-            original, compressed, ratio, original_size, compressed_size = compress_image(
-                path,
-                komponen,
-                mode
-            )
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.subheader("Original")
-                st.image(
-                    original,
-                    use_container_width=True
+            try:
+                original, compressed, ratio, original_size, compressed_size = compress_image(
+                    path,
+                    komponen,
+                    mode
                 )
 
-                st.info(
-                    f"Ukuran : {original_size:.2f}kb\n\n"
-                )
+                col1, col2 = st.columns(2)
 
-            with col2:
-                st.subheader("Hasil PCA")
-                st.image(
-                    compressed,
-                    use_container_width=True
-                )
+                with col1:
+                    st.subheader("Original")
+                    st.image(original, use_container_width=True)
+                    st.info(f"Ukuran: {original_size:.2f} KB")
 
-                st.info(
-                    f"Ukuran : {compressed_size:.2f}kb\n\n"
-                )
+                with col2:
+                    st.subheader("Hasil PCA")
+                    st.image(compressed, use_container_width=True)
+                    st.info(f"Ukuran: {compressed_size:.2f} KB")
 
-            st.divider()
+                st.divider()
 
-            colA, colB, colC = st.columns(3)
+                colA, colB, colC = st.columns(3)
 
-            with colA:
-                st.metric(
-                    "Ukuran Awal",
-                    f"{original_size:.2f}kb "
-                )
+                with colA:
+                    st.metric("Ukuran Awal", f"{original_size:.2f} KB")
 
-            with colB:
-                st.metric(
-                    "Ukuran kompresi",
-                    f"{compressed_size:.2f}kb "
-                )
+                with colB:
+                    st.metric("Ukuran Kompresi", f"{compressed_size:.2f} KB")
 
-            with colC:
-                st.metric(
-                    "Rasio Kompresi",
-                    f"{ratio:.2f}%"
-                )
+                with colC:
+                    st.metric("Rasio Kompresi", f"{ratio:.2f}%")
+
+            except Exception as e:
+                st.error(f"Terjadi kesalahan saat mengompresi gambar: {e}")
